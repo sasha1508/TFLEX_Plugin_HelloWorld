@@ -1,4 +1,6 @@
 #include "Plugin.h"
+using namespace TFlex::Model::Model3D;
+using namespace TFlex::Model::Model2D;
 
 
 HelloPlugin::HelloPlugin(PluginFactory^ factory) : Plugin(factory)
@@ -53,9 +55,26 @@ void HelloPlugin::Start()
 		Document^ doc = TFlex::Application::ActiveDocument;
 		if (doc != nullptr)
 		{
+			//Отображаем имя открытого документа:
 			String^ FileName = doc->FileName;
-
 			MessageBox::Show(FileName);
+
+			//Открываем блок изменения документа
+			doc->BeginChanges("Создание горизонтального отрезка");
+
+			//Path3D^ path3D = gcnew Path3D(doc);
+
+
+			//path3D->Create(doc, , );
+
+			//Создаем первый узел
+			FreeNode^ newNode1 = gcnew FreeNode(doc, 100, 100);
+			//Создаем второй узел
+			FreeNode^ newNode2 = gcnew FreeNode(doc, 200, 100);
+			//Соединяем узлы прямой
+			ConstructionOutline^ newOutline = gcnew ConstructionOutline(doc, newNode1, newNode2);
+			//Закрываем блок изменения документа
+			doc->EndChanges();
 		}
 	}
 }
