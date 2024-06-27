@@ -38,7 +38,7 @@ void HelloPlugin::OnCommand(Document^ document, int id)
 	switch (id)
 	{
 	case 1:
-		MessageBox::Show("Hello World.");
+		MessageBox::Show("Hello World.+++");
 		break;
 	}
 }
