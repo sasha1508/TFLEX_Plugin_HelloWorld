@@ -1,5 +1,6 @@
 #include "Plugin.h"
 
+
 HelloPlugin::HelloPlugin(PluginFactory^ factory) : Plugin(factory)
 {}
 
@@ -38,7 +39,24 @@ void HelloPlugin::OnCommand(Document^ document, int id)
 	switch (id)
 	{
 	case 1:
-		MessageBox::Show("Hello World.+++");
+		//MessageBox::Show("Hello World.+++");
+		Start();
 		break;
 	}
 }
+
+void HelloPlugin::Start()
+{
+	DialogResult result = MessageBox::Show("Будет построен замкнутый контур", "Построение замкнутого контура", MessageBoxButtons::OKCancel);
+	if (result == DialogResult::OK)
+	{
+		Document^ doc = TFlex::Application::ActiveDocument;
+		if (doc != nullptr)
+		{
+			String^ FileName = doc->FileName;
+
+			MessageBox::Show(FileName);
+		}
+	}
+}
+

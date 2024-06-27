@@ -13,5 +13,6 @@ protected public:
 	virtual void OnInitialize() override;
 	virtual void OnCreateTools() override;
 	virtual void OnCommand(Document^ document, int id) override;
+	virtual void Start();
 };
 
