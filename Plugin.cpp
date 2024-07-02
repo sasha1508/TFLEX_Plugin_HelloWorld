@@ -15,7 +15,7 @@ void HelloPlugin::OnCreateTools()
 {
 	Plugin::OnCreateTools();
 
-	RegisterCommand(1, "Показать окно");
+	RegisterCommand(1, "Построить контур");
 	TFlex::Application::ActiveMainWindow->InsertPluginMenuItem(1,
 		"Плагин", MainWindow::InsertMenuPosition::EndOfTools, this);
 
@@ -41,7 +41,7 @@ void HelloPlugin::OnCommand(Document^ document, int id)
 	switch (id)
 	{
 	case 1:
-		//MessageBox::Show("Hello World.+++");
+		//MessageBox::Show("Hello World.");
 		Start();
 		break;
 	}
@@ -55,26 +55,40 @@ void HelloPlugin::Start()
 		Document^ doc = TFlex::Application::ActiveDocument;
 		if (doc != nullptr)
 		{
-			//Отображаем имя открытого документа:
-			String^ FileName = doc->FileName;
-			MessageBox::Show(FileName);
+			////Отображаем имя открытого документа:
+			//String^ FileName = doc->FileName;
+			//MessageBox::Show(FileName);
 
-			//Открываем блок изменения документа
-			doc->BeginChanges("Создание горизонтального отрезка");
+			doc->Objects;
+			TFlex::Model::ObjectContainer^ point = doc->Nodes3D;
+
+			Object^ obj = point->Count;
+
+			//Получение объекта по имени
+			OnSurfacePoint^ point_0 = (OnSurfacePoint^)doc->GetObjectByName("3D Узел_9");
+
+		
+			
+			//TFlex::Model::Model3D::OnSurfacePoint^ num = point[8];
+
+			
 
 			//Path3D^ path3D = gcnew Path3D(doc);
 
-
 			//path3D->Create(doc, , );
+			
 
-			//Создаем первый узел
-			FreeNode^ newNode1 = gcnew FreeNode(doc, 100, 100);
-			//Создаем второй узел
-			FreeNode^ newNode2 = gcnew FreeNode(doc, 200, 100);
-			//Соединяем узлы прямой
-			ConstructionOutline^ newOutline = gcnew ConstructionOutline(doc, newNode1, newNode2);
-			//Закрываем блок изменения документа
-			doc->EndChanges();
+
+			////Открываем блок изменения документа
+			//doc->BeginChanges("Создание горизонтального отрезка");
+			////Создаем первый узел
+			//FreeNode^ newNode1 = gcnew FreeNode(doc, 100, 100);
+			////Создаем второй узел
+			//FreeNode^ newNode2 = gcnew FreeNode(doc, 200, 100);
+			////Соединяем узлы прямой
+			//ConstructionOutline^ newOutline = gcnew ConstructionOutline(doc, newNode1, newNode2);
+			////Закрываем блок изменения документа
+			//doc->EndChanges();
 		}
 	}
 }
