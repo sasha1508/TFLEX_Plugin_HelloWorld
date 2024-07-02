@@ -1,4 +1,5 @@
 #include "Plugin.h"
+#include <list>
 using namespace TFlex::Model::Model3D;
 using namespace TFlex::Model::Model2D;
 
@@ -59,19 +60,42 @@ void HelloPlugin::Start()
 			//String^ FileName = doc->FileName;
 			//MessageBox::Show(FileName);
 
-			doc->Objects;
-			TFlex::Model::ObjectContainer^ point = doc->Nodes3D;
+			//doc->Objects;
 
-			Object^ obj = point->Count;
+			TFlex::Model::ObjectContainer^ points = doc->Nodes3D;   //получаем список всех 3D узлов
+			TFlex::Model::ObjectContainer^ paths3D = doc->Paths3D;   //получаем список всех 3D узлов
 
-			//Получение объекта по имени
-			OnSurfacePoint^ point_0 = (OnSurfacePoint^)doc->GetObjectByName("3D Узел_9");
-
-		
+			OnSurfacePoint^ point_0 = (OnSurfacePoint^)doc->GetObjectByName("3D Узел_9");  //получаем исходную точку по имени
+			Path3D^ Path3D_0 = (Path3D^)doc->GetObjectByName("3D Путь_7");  //получаем 3D-Путь по имени
+			TFlex::Model::Model3D::Geometry::ModelSurface^ surface_0 = point_0->Surface;  //получаем поверхность, на которой расположена точка
 			
-			//TFlex::Model::Model3D::OnSurfacePoint^ num = point[8];
+
+			for each (Object^ point in points)
+			{
+				MessageBox::Show(((TFlex::Model::Model3D::Node3D^)point)->DisplayName, "Перечисляем точки");
+			}
+			MessageBox::Show(surface_0->Owner->DisplayName + " / " + Path3D_0->DisplayName, point_0->DisplayName);
+			
+			for each (Object ^ path3D in paths3D)
+			{
+				MessageBox::Show(((TFlex::Model::Model3D::Path3D^)path3D)->DisplayName, "Перечисляем 3D пути");
+			}
 
 			
+			//Открываем блок изменения документа
+			doc->BeginChanges("Создание отрезка из точки");;
+
+			Path3D^ path3D_0 = gcnew Path3D(doc);
+
+			//path3D_0.
+			
+		//	path3D_0->Create(doc, curves, intervals);
+			
+			//Закрываем блок изменения документа
+			doc->EndChanges();
+
+
+
 
 			//Path3D^ path3D = gcnew Path3D(doc);
 
