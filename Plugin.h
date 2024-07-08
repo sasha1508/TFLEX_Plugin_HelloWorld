@@ -14,5 +14,6 @@ protected public:
 	virtual void OnCreateTools() override;
 	virtual void OnCommand(Document^ document, int id) override;
 	virtual void Start();
+	virtual void Copy3DPath(Document^ doc, TFlex::Model::ObjectContainer^ paths3D);
 };
 
