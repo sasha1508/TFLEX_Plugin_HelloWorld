@@ -82,31 +82,32 @@ void HelloPlugin::Start()
 			
 			//TFlex::StatusBar::Command = "";
 			
-
-
-			doc->BeginChanges("Профиль по штриховке");//Открытие блока изменений документа
-
-			//создание узлов        
-			CoordinateNode3D^ fn1 = gcnew CoordinateNode3D(doc);
-			fn1->X = 10;
-			fn1->Y = 10;
-			fn1->Z = 10;
-			FreeNode^ fn2 = gcnew FreeNode(doc, 40, 30);
-			FreeNode^ fn3 = gcnew FreeNode(doc, 70, 10);
-
-			//создание линий, проходящих через эти узлы        
-		//	ConstructionOutline^ l1 = gcnew ConstructionOutline(doc, fn1, fn2);
-			ConstructionOutline^ l2 = gcnew ConstructionOutline(doc, fn2, fn3);
-		//	ConstructionOutline^ l3 = gcnew ConstructionOutline(doc, fn3, fn1);
-
-			//рабочая плоскость(вид слева), на которой будет построен профиль        
-			StandardWorkplane^ swp = gcnew StandardWorkplane(doc, StandardWorkplane::StandardType::Left);
-			SketchProfile^ sp = gcnew SketchProfile(doc);
-			sp->WorkSurface = swp;
-
-			doc->EndChanges();//Закрытие блока изменений документа
-
+			Create3DPoint(doc, 20, 20, 20);
 			Copy3DPath(doc, paths3D);
+
+		//	doc->BeginChanges("Профиль по штриховке");//Открытие блока изменений документа
+
+		//	//создание узлов        
+		//	CoordinateNode3D^ fn1 = gcnew CoordinateNode3D(doc);
+		//	fn1->X = 10;
+		//	fn1->Y = 10;
+		//	fn1->Z = 10;
+		//	FreeNode^ fn2 = gcnew FreeNode(doc, 40, 30);
+		//	FreeNode^ fn3 = gcnew FreeNode(doc, 70, 10);
+
+		//	//создание линий, проходящих через эти узлы        
+		////	ConstructionOutline^ l1 = gcnew ConstructionOutline(doc, fn1, fn2);
+		//	ConstructionOutline^ l2 = gcnew ConstructionOutline(doc, fn2, fn3);
+		////	ConstructionOutline^ l3 = gcnew ConstructionOutline(doc, fn3, fn1);
+
+		//	//рабочая плоскость(вид слева), на которой будет построен профиль        
+		//	StandardWorkplane^ swp = gcnew StandardWorkplane(doc, StandardWorkplane::StandardType::Left);
+		//	SketchProfile^ sp = gcnew SketchProfile(doc);
+		//	sp->WorkSurface = swp;
+
+		//	doc->EndChanges();//Закрытие блока изменений документа
+
+			
 
 
 
@@ -159,6 +160,21 @@ void HelloPlugin::Copy3DPath(Document^ doc, TFlex::Model::ObjectContainer^ paths
 	Path3DPath^ newPath3D = gcnew Path3DPath(doc);
 	for each (Object ^ path3D in paths3D)
 		newPath3D->Wires->Add(((Path3D^)path3D)->Geometry->Curve);
+
+	//Закрываем блок изменения документа
+	doc->EndChanges();
+}
+
+void HelloPlugin::Create3DPoint(Document^ doc, int x, int y, int z)
+{
+	//Открываем блок изменения документа
+	doc->BeginChanges("Профиль по штриховке");//Открытие блока изменений документа
+
+	//создание узлов        
+	CoordinateNode3D^ fn1 = gcnew CoordinateNode3D(doc);
+	fn1->X = x;
+	fn1->Y = y;
+	fn1->Z = z;
 
 	//Закрываем блок изменения документа
 	doc->EndChanges();
