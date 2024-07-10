@@ -83,7 +83,7 @@ void HelloPlugin::Start()
 			//TFlex::StatusBar::Command = "";
 			
 			CoordinateNode3D^ point_1 = Create3DPoint(doc, 20, 20, 20);
-			CoordinateNode3D^ point_2 = Create3DPoint(doc, 30, 20, 200);
+			CoordinateNode3D^ point_2 = Create3DPoint(doc, 20, 20, 200);
 			Copy3DPath(doc, paths3D);
 
 			FreeNode^ point2D_1 = Create2DPoint(doc, 20, 20);
@@ -95,12 +95,10 @@ void HelloPlugin::Start()
 			StandardWorkplane^ plane_1 = CreatePlane(doc);        //создаём рабоччуу плоскость
 			SketchProfile^ sketch = CreateSketch(doc, plane_1);   //создаём эскиз на рабочей плоскости
 
-			//Создаём три линии:
 			ConstructionOutline^ line_1 = CreateLineOnTwo2DPoints(doc, point2D_1, point2D_2);
 			ConstructionOutline^ line_2 = CreateLineOnTwo2DPoints(doc, point2D_2, point2D_3);
 			ConstructionOutline^ line_3 = CreateLineOnTwo2DPoints(doc, point2D_3, point2D_1);
 
-			//Добавляем линии в эскиз:
 			sketch->Outlines->Add(line_1);
 			sketch->Outlines->Add(line_2);
 			sketch->Outlines->Add(line_3);

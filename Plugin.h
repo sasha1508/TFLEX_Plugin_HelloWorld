@@ -4,6 +4,8 @@ using namespace System::Windows::Forms;
 
 using namespace TFlex;
 using namespace TFlex::Model;
+using namespace TFlex::Model::Model3D;
+using namespace TFlex::Model::Model2D;
 
 ref class HelloPlugin : public Plugin
 {
@@ -15,6 +17,11 @@ protected public:
 	virtual void OnCommand(Document^ document, int id) override;
 	virtual void Start();
 	virtual void Copy3DPath(Document^ doc, TFlex::Model::ObjectContainer^ paths3D);
-	virtual void Create3DPoint(Document^ doc, int x, int Y, int z);
+	FreeNode^ Create2DPoint(Document^ doc, int x, int y);
+	CoordinateNode3D^ Create3DPoint(Document^ doc, int x, int Y, int z);
+	ConstructionOutline^ CreateLineOnTwo2DPoints(Document^ doc, FreeNode^ point_1, FreeNode^ point_2);
+	void CreateLineOnTwo3DPoints(Document^ doc, CoordinateNode3D^ point_1, CoordinateNode3D^ point_2);
+	StandardWorkplane^ CreatePlane(Document^ doc);
+	SketchProfile^ CreateSketch(Document^ doc, StandardWorkplane^ swp);
 };
 
