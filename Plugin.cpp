@@ -1,5 +1,6 @@
 #include "Plugin.h"
 #include <list>
+//#include <string>
 using namespace TFlex::Model::Model3D;
 using namespace TFlex::Model::Model2D;
 
@@ -70,80 +71,68 @@ void HelloPlugin::Start()
 			TFlex::Model::Model3D::Geometry::ModelSurface^ surface_0 = point_0->Surface;  //получаем поверхность, на которой расположена точка
 			
 
-			for each (Object^ point in points)
-				MessageBox::Show(((TFlex::Model::Model3D::Node3D^)point)->DisplayName, "Перечисляем точки");
+			//Перечисляем все 3D узлы и выводим их имена:
+			System::String^ pointsString = "";
+			for each (Object ^ point in points)
+				pointsString += ((TFlex::Model::Model3D::Node3D^)point)->DisplayName + "\n";
+			MessageBox::Show(pointsString, "Перечисляем 3D узлы");
 			
 
+			//Выводим имена поверхности и 3D пути найденых по имени:
 			MessageBox::Show(surface_0->Owner->DisplayName + " / " + Path3D_0->DisplayName, point_0->DisplayName);
 			
 
+			//Перечисляем все 3D пути и выводим их имена:
+			System::String^ paths3DString = "";
 			for each (Object ^ path3D in paths3D)
-				MessageBox::Show(((TFlex::Model::Model3D::Path3D^)path3D)->DisplayName, "Перечисляем 3D пути");
+				paths3DString += ((TFlex::Model::Model3D::Path3D^)path3D)->DisplayName + "\n";
+			MessageBox::Show(paths3DString, "Перечисляем 3D пути");
+
 			
-			//TFlex::StatusBar::Command = "";
-			
-			CoordinateNode3D^ point_1 = Create3DPoint(doc, 20, 20, 20);
-			CoordinateNode3D^ point_2 = Create3DPoint(doc, 30, 20, 200);
+			//Создаём 3D узлы:
+			MessageBox::Show("Создаём 3D узлы", "Построение");
+			CoordinateNode3D^ point_1 = Create3DPoint(doc, 20, 20, 550);
+			CoordinateNode3D^ point_2 = Create3DPoint(doc, 30, 80, 600);
+
+
+			//Создаём 3D путь копированием всех 3D путей:
+			MessageBox::Show("Создаём 3D путь копированием всех 3D путей", "Построение");
 			Copy3DPath(doc, paths3D);
 
-			FreeNode^ point2D_1 = Create2DPoint(doc, 20, 20);
-			FreeNode^ point2D_2 = Create2DPoint(doc, 20, 500);
-			FreeNode^ point2D_3 = Create2DPoint(doc, 200, 500);
 
-			//
+				//ПОСТРОЕНИЕ ЗАМКНУТОГО КОНТУРА НА ПЛОСКОСТИ:
+
+			MessageBox::Show("Строим замкнутый контур на плоскости", "Построение");
 
 			StandardWorkplane^ plane_1 = CreatePlane(doc);        //создаём рабоччуу плоскость
 			SketchProfile^ sketch = CreateSketch(doc, plane_1);   //создаём эскиз на рабочей плоскости
+
+			//Создаём три точки:
+			FreeNode^ point2D_1 = Create2DPoint(doc, 20, 20);
+			FreeNode^ point2D_2 = Create2DPoint(doc, 20, 500);
+			FreeNode^ point2D_3 = Create2DPoint(doc, 200, 500);
 
 			//Создаём три линии:
 			ConstructionOutline^ line_1 = CreateLineOnTwo2DPoints(doc, point2D_1, point2D_2);
 			ConstructionOutline^ line_2 = CreateLineOnTwo2DPoints(doc, point2D_2, point2D_3);
 			ConstructionOutline^ line_3 = CreateLineOnTwo2DPoints(doc, point2D_3, point2D_1);
 
+
 			//Добавляем линии в эскиз:
+			doc->BeginChanges("Добавляем линий в эскиз");    //Открываем блок изменения документа
 			sketch->Outlines->Add(line_1);
 			sketch->Outlines->Add(line_2);
 			sketch->Outlines->Add(line_3);
+			doc->EndChanges();   //Закрываем блок изменения документа
 
 
-		//	doc->EndChanges();//Закрытие блока изменений документа
-
-			
-
-
-
-			//Открываем блок изменения документа
-			doc->BeginChanges("Создание отрезка из точки");
-
+			//Создаём выдавливание
+			MessageBox::Show("Создаём выдавливание", "Построение");
+			Extrusion(doc, sketch, (Parameter^)100);
 
 			//TFlex::Application::Window->StatusBar->Command = "3PA";
 		//	TFlex::Application::ActiveMainWindow->StatusBar->Command = "3PA";
 			//TFlex::Application::ActiveMainWindow->StatusBar->Command = "K";
-			
-		//	path3D_0->Create(doc, curves, intervals);
-			
-			//Закрываем блок изменения документа
-			doc->EndChanges();
-
-
-
-
-			//Path3D^ path3D = gcnew Path3D(doc);
-
-			//path3D->Create(doc, , );
-			
-
-
-			////Открываем блок изменения документа
-			//doc->BeginChanges("Создание горизонтального отрезка");
-			////Создаем первый узел
-			//FreeNode^ newNode1 = gcnew FreeNode(doc, 100, 100);
-			////Создаем второй узел
-			//FreeNode^ newNode2 = gcnew FreeNode(doc, 200, 100);
-			////Соединяем узлы прямой
-			//ConstructionOutline^ newOutline = gcnew ConstructionOutline(doc, newNode1, newNode2);
-			////Закрываем блок изменения документа
-			//doc->EndChanges();
 		}
 	}
 }
@@ -155,15 +144,15 @@ void HelloPlugin::Start()
 /// <param name="paths3D"></param>
 void HelloPlugin::Copy3DPath(Document^ doc, TFlex::Model::ObjectContainer^ paths3D)
 {
-	//Открываем блок изменения документа
-	doc->BeginChanges("Создание 3D пути копированием");
+	
+	doc->BeginChanges("Создание 3D пути копированием");    //Открываем блок изменения документа
 
 	Path3DPath^ newPath3D = gcnew Path3DPath(doc);
-	for each (Object ^ path3D in paths3D)
-		newPath3D->Wires->Add(((Path3D^)path3D)->Geometry->Curve);
+	for each (Path3D^ path3D in paths3D)
+		newPath3D->Wires->Add(path3D->Geometry->Curve);
 
-	//Закрываем блок изменения документа
-	doc->EndChanges();
+	
+	doc->EndChanges();   //Закрываем блок изменения документа
 }
 
 /// <summary>
@@ -203,8 +192,8 @@ CoordinateNode3D^ HelloPlugin::Create3DPoint(Document^ doc, int x, int y, int z)
 	fn1->Y = y;
 	fn1->Z = z;
 
-	//Закрываем блок изменения документа
-	doc->EndChanges();
+	
+	doc->EndChanges();   //Закрываем блок изменения документа
 
 	return fn1;
 }
@@ -220,13 +209,9 @@ ConstructionOutline^ HelloPlugin::CreateLineOnTwo2DPoints(Document^ doc, FreeNod
 {
 	doc->BeginChanges("Создание отрезка по двум 2D узлам");  //Открываем блок изменения документа
 
+
 	ConstructionOutline^ l1 = gcnew ConstructionOutline(doc, point_1, point_2);
 
-	//рабочая плоскость(вид слева), на которой будет построен профиль        
-			/*StandardWorkplane^ swp = gcnew StandardWorkplane(doc, StandardWorkplane::StandardType::Left);
-			SketchProfile^ sp = gcnew SketchProfile(doc);
-			sp->WorkSurface = swp;
-			sp->Outlines->Add(l1);*/
 	
 	doc->EndChanges();   //Закрываем блок изменения документа
 
@@ -292,3 +277,14 @@ SketchProfile^ HelloPlugin::CreateSketch(Document^ doc, StandardWorkplane^ swp)
 	return sp;
 }
 
+
+void HelloPlugin::Extrusion(Document^ doc, SketchProfile^ profile, Parameter^ length)
+{
+	doc->BeginChanges("Выдавливание");  //Открываем блок изменения документа
+
+	ThickenExtrusion^ extr_1 = gcnew ThickenExtrusion(doc);       // Создаем операцию выталкивания
+	extr_1->ForwardLength = length;            // Длина выталкивания для первого направления
+	extr_1->Profile->Add(profile->Geometry->SheetContour);        // Профиль для выталкивания
+
+	doc->EndChanges();   //Закрываем блок изменения документа
+}
