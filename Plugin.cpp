@@ -1,8 +1,8 @@
 #include "Plugin.h"
 #include <list>
-//#include <string>
 using namespace TFlex::Model::Model3D;
 using namespace TFlex::Model::Model2D;
+
 
 
 HelloPlugin::HelloPlugin(PluginFactory^ factory) : Plugin(factory)
@@ -67,6 +67,28 @@ void HelloPlugin::Start()
 			TFlex::Model::ObjectContainer^ paths3D = doc->Paths3D;   //получаем список всех 3D путей
 
 			OnSurfacePoint^ point_0 = (OnSurfacePoint^)doc->GetObjectByName("3D Узел_9");  //получаем исходную точку по имени
+
+
+
+			doc->BeginChanges("Плоскость по нормали в точке");    //Открываем блок изменения документа
+			TFlex::Model::Model3D::Geometry::ModelAxis^ normal1 = point_0->Geometry->SurfaceNormalAxis;  //получаем нормаль в точке на поверхности, в виде модельной оси
+			TFlex::Model::Model3D::Geometry::ModelDirection^ normal2 = point_0->Geometry->SurfaceNormalDirection;  //получаем нормаль в точке на поверхности, в виде вектора с модели
+			
+			TFlex::Model::Model3D::OnAxisWorkplane^ plane1 = gcnew TFlex::Model::Model3D::OnAxisWorkplane(doc); // Рабочая плоскость по оси (по нормали)
+			plane1->AxisOnWorkplane = normal1;  //задаём ось, которая лежит на рабочей плоскости
+			for (int i = 0; i < 360; i++)
+			{
+				plane1->Angle = 75;   //задаём угол поворота плоскости в градусах
+				//MessageBox::Show("Угол поворота плоскости: " + i.ToString() + " град.");
+				//doc->ApplyChanges();
+			}
+			
+			//plane1->Geometry->Plane.->IntersectCurveSurfaceData;
+			//plane1->VisibleInScene = false;
+			doc->EndChanges();   //Закрываем блок изменения документа
+
+
+
 			Path3D^ Path3D_0 = (Path3D^)doc->GetObjectByName("3D Путь_7");  //получаем 3D-Путь по имени
 			TFlex::Model::Model3D::Geometry::ModelSurface^ surface_0 = point_0->Surface;  //получаем поверхность, на которой расположена точка
 			
@@ -119,7 +141,7 @@ void HelloPlugin::Start()
 
 
 			//Добавляем линии в эскиз:
-			doc->BeginChanges("Добавляем линий в эскиз");    //Открываем блок изменения документа
+			doc->BeginChanges("Добавление линий в эскиз");    //Открываем блок изменения документа
 			sketch->Outlines->Add(line_1);
 			sketch->Outlines->Add(line_2);
 			sketch->Outlines->Add(line_3);
@@ -128,7 +150,7 @@ void HelloPlugin::Start()
 
 			//Создаём выдавливание
 			MessageBox::Show("Создаём выдавливание", "Построение");
-			Extrusion(doc, sketch, (Parameter^)100);
+			Extrusion(doc, sketch, 100);
 
 			//TFlex::Application::Window->StatusBar->Command = "3PA";
 		//	TFlex::Application::ActiveMainWindow->StatusBar->Command = "3PA";
@@ -278,8 +300,10 @@ SketchProfile^ HelloPlugin::CreateSketch(Document^ doc, StandardWorkplane^ swp)
 }
 
 
-void HelloPlugin::Extrusion(Document^ doc, SketchProfile^ profile, Parameter^ length)
+void HelloPlugin::Extrusion(Document^ doc, SketchProfile^ profile, int lengthInt)
 {
+	Parameter^ length = (Parameter^)lengthInt;
+
 	doc->BeginChanges("Выдавливание");  //Открываем блок изменения документа
 
 	ThickenExtrusion^ extr_1 = gcnew ThickenExtrusion(doc);       // Создаем операцию выталкивания

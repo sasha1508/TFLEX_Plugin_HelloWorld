@@ -23,6 +23,6 @@ protected public:
 	void CreateLineOnTwo3DPoints(Document^ doc, CoordinateNode3D^ point_1, CoordinateNode3D^ point_2);
 	StandardWorkplane^ CreatePlane(Document^ doc);
 	SketchProfile^ CreateSketch(Document^ doc, StandardWorkplane^ swp);
-	void Extrusion(Document^ doc, SketchProfile^ profile, Parameter^ length);
+	void Extrusion(Document^ doc, SketchProfile^ profile, int length);
 };
 
