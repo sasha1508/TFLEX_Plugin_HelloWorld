@@ -76,18 +76,25 @@ void HelloPlugin::Start()
 			
 
 			MessageBox::Show("Создаём точку на пересечении 3D Путь_7 и 3D Путь_9", "Построение");
+		//	doc->BeginChanges("Точки пересечения 3D путей");    //Открываем блок изменения документа
+			
 			BaseInterval^ owninterval = Path3D_7->Geometry->Curve->Param->Interval;
 			BaseInterval^ interval = Path3D_9->Geometry->Curve->Param->Interval;
+
+		//	Interval^ owninterval = Path3D_7->Geometry->Curve->Interval();
+		//	Interval^ interval = gcnew TFlex::Model::Model3D::Geometry::Interval(-0.001, 0.001);
 			ModelCurve^ curve_7 = Path3D_7->Geometry->Curve;
 			ModelCurve^ curve_9 = Path3D_9->Geometry->Curve;
 			ModelBox^ modelBox_9 = Path3D_9->Geometry->Box;
 
 			IntersectCurveData^ intersect = curve_7->IntersectCurve(owninterval, curve_9, interval, true, modelBox_9, true, surface_0);
 
+		//	doc->EndChanges();   //Закрываем блок изменения документа
+
 			double p_x = intersect[0]->Coord->X * 1000;
 			double p_y = intersect[0]->Coord->Y * 1000;
 			double	p_z = intersect[0]->Coord->Z * 1000;
-			CoordinateNode3D^ pointIntersectCurve = Create3DPoint(doc, p_x, p_y, p_z); //отображаем точку пересечения 3D путей
+			CoordinateNode3D^ pointIntersectCurve = Create3DPoint(doc, p_x, p_y, p_z);
 
 
 
