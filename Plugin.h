@@ -24,5 +24,6 @@ protected public:
 	StandardWorkplane^ CreatePlane(Document^ doc);
 	SketchProfile^ CreateSketch(Document^ doc, StandardWorkplane^ swp);
 	void Extrusion(Document^ doc, SketchProfile^ profile, int length);
+	OnAxisWorkplane^ PlaneFromNormal(Document^ doc, OnSurfacePoint^ point_0, int angle);
 };
 

@@ -1,7 +1,9 @@
 #include "Plugin.h"
 #include <list>
+
 using namespace TFlex::Model::Model3D;
 using namespace TFlex::Model::Model2D;
+using namespace TFlex::Model::Model3D::Geometry;
 
 
 
@@ -68,30 +70,25 @@ void HelloPlugin::Start()
 
 			OnSurfacePoint^ point_0 = (OnSurfacePoint^)doc->GetObjectByName("3D Узел_9");  //получаем исходную точку по имени
 
+			Path3D^ Path3D_7 = (Path3D^)doc->GetObjectByName("3D Путь_7");  //получаем 3D-Путь по имени
+			Path3D^ Path3D_9 = (Path3D^)doc->GetObjectByName("3D Путь_9");  //получаем 3D-Путь по имени
+			TFlex::Model::Model3D::Geometry::ModelSurface^ surface_0 = point_0->Surface;  //получаем поверхность, на которой расположена точка
+			
 
 
-			doc->BeginChanges("Плоскость по нормали в точке");    //Открываем блок изменения документа
-			TFlex::Model::Model3D::Geometry::ModelAxis^ normal1 = point_0->Geometry->SurfaceNormalAxis;  //получаем нормаль в точке на поверхности, в виде модельной оси
-			TFlex::Model::Model3D::Geometry::ModelDirection^ normal2 = point_0->Geometry->SurfaceNormalDirection;  //получаем нормаль в точке на поверхности, в виде вектора с модели
+			doc->BeginChanges("Точки пересечения 3D путей");    //Открываем блок изменения документа
 			
-			TFlex::Model::Model3D::OnAxisWorkplane^ plane1 = gcnew TFlex::Model::Model3D::OnAxisWorkplane(doc); // Рабочая плоскость по оси (по нормали)
-			plane1->AxisOnWorkplane = normal1;  //задаём ось, которая лежит на рабочей плоскости
-			for (int i = 0; i < 360; i++)
-			{
-				plane1->Angle = 75;   //задаём угол поворота плоскости в градусах
-				//MessageBox::Show("Угол поворота плоскости: " + i.ToString() + " град.");
-				//doc->ApplyChanges();
-			}
-			
-			//plane1->Geometry->Plane.->IntersectCurveSurfaceData;
-			//plane1->VisibleInScene = false;
+			Interval^ owninterval = gcnew TFlex::Model::Model3D::Geometry::Interval(-5000, 5000);
+			Interval^ interval = gcnew TFlex::Model::Model3D::Geometry::Interval(-5000, 5000);
+			ModelCurve^ curve_7 = Path3D_7->Geometry->Curve;
+			ModelCurve^ curve_9 = Path3D_9->Geometry->Curve;
+			ModelBox^ modelBox_9 = Path3D_9->Geometry->Box;
+
+			IntersectCurveData^ intersect = curve_7->IntersectCurve(owninterval, curve_9, interval, false, modelBox_9, false, surface_0);
+	//)
 			doc->EndChanges();   //Закрываем блок изменения документа
 
 
-
-			Path3D^ Path3D_0 = (Path3D^)doc->GetObjectByName("3D Путь_7");  //получаем 3D-Путь по имени
-			TFlex::Model::Model3D::Geometry::ModelSurface^ surface_0 = point_0->Surface;  //получаем поверхность, на которой расположена точка
-			
 
 			//Перечисляем все 3D узлы и выводим их имена:
 			System::String^ pointsString = "";
@@ -99,18 +96,23 @@ void HelloPlugin::Start()
 				pointsString += ((TFlex::Model::Model3D::Node3D^)point)->DisplayName + "\n";
 			MessageBox::Show(pointsString, "Перечисляем 3D узлы");
 			
-
 			//Выводим имена поверхности и 3D пути найденых по имени:
-			MessageBox::Show(surface_0->Owner->DisplayName + " / " + Path3D_0->DisplayName, point_0->DisplayName);
+			MessageBox::Show(surface_0->Owner->DisplayName + " / " + Path3D_7->DisplayName, point_0->DisplayName);
 			
-
 			//Перечисляем все 3D пути и выводим их имена:
 			System::String^ paths3DString = "";
 			for each (Object ^ path3D in paths3D)
 				paths3DString += ((TFlex::Model::Model3D::Path3D^)path3D)->DisplayName + "\n";
 			MessageBox::Show(paths3DString, "Перечисляем 3D пути");
 
+
+
+
+			//Создаём плоскость по нормали
+			MessageBox::Show("Создаём плоскость по нормали", "Построение");
+			OnAxisWorkplane^ planFromNormal = PlaneFromNormal(doc, point_0, 75);
 			
+
 			//Создаём 3D узлы:
 			MessageBox::Show("Создаём 3D узлы", "Построение");
 			CoordinateNode3D^ point_1 = Create3DPoint(doc, 20, 20, 550);
@@ -147,6 +149,8 @@ void HelloPlugin::Start()
 			sketch->Outlines->Add(line_3);
 			doc->EndChanges();   //Закрываем блок изменения документа
 
+
+			    //ВЫДАВЛИВАНИЕ:
 
 			//Создаём выдавливание
 			MessageBox::Show("Создаём выдавливание", "Построение");
@@ -311,4 +315,21 @@ void HelloPlugin::Extrusion(Document^ doc, SketchProfile^ profile, int lengthInt
 	extr_1->Profile->Add(profile->Geometry->SheetContour);        // Профиль для выталкивания
 
 	doc->EndChanges();   //Закрываем блок изменения документа
+}
+
+
+OnAxisWorkplane^ HelloPlugin::PlaneFromNormal(Document^ doc, OnSurfacePoint^ point_0, int angle)
+{
+	doc->BeginChanges("Плоскость по нормали в точке");    //Открываем блок изменения документа
+	TFlex::Model::Model3D::Geometry::ModelAxis^ normal1 = point_0->Geometry->SurfaceNormalAxis;  //получаем нормаль в точке на поверхности, в виде модельной оси
+	TFlex::Model::Model3D::Geometry::ModelDirection^ normal2 = point_0->Geometry->SurfaceNormalDirection;  //получаем нормаль в точке на поверхности, в виде вектора с модели
+
+	TFlex::Model::Model3D::OnAxisWorkplane^ plane1 = gcnew TFlex::Model::Model3D::OnAxisWorkplane(doc); // Рабочая плоскость по оси (по нормали)
+	plane1->AxisOnWorkplane = normal1;  //задаём ось, которая лежит на рабочей плоскости
+	plane1->Angle = angle;   //задаём угол поворота плоскости в градусах
+
+	//plane1->VisibleInScene = false;
+	doc->EndChanges();   //Закрываем блок изменения документа
+
+	return plane1;
 }
